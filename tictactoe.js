@@ -8,7 +8,16 @@ var readlineSync = require('readline-sync');
  * @author 	Juha Havulinna
  */
 
-const ATTACK_DEFENCE_RATION = 0.3
+/**
+ * The propabity computer will defence. 0.3 means 30%.
+ */
+const DEFENCE_RATION = 0.3;
+
+const emptySlot = '_'
+const X = 'x';
+const O = 'o';
+const newLine = `
+`;     
 
 let boardSize = 0;
 
@@ -18,7 +27,7 @@ if (process.argv.length == 3) {
   } else {
     console.log('Usage:' + process.argv[0] + ' [ <board size> ]');
     return; // Should be exit, is it?
-}
+};
 
 /**
  * Change row number to row letter eg. 0 -> 'A'.
@@ -28,7 +37,7 @@ if (process.argv.length == 3) {
  */
 function yToRowChar(_row) {
   return String.fromCharCode('A'.charCodeAt(0) + _row);
-}
+};
 
 /**
  * Change row letter to number e.g. 'B' -> 1.
@@ -38,15 +47,9 @@ function yToRowChar(_row) {
  */
 function rowCharToy(_char) {
   return _char.charCodeAt(0) - 'A'.charCodeAt(0);
-}
+};
 
-// boardSize = 4;
 
-const emptySlot = '_'
-const X = 'x';
-const O = 'o';
-const newLine = `
-`;     
 
 //-----------------------------------------------------------------------------
 /**
@@ -94,7 +97,7 @@ function Square(_kumma_x, _kumma_y, _defenceScore, _attackScore) {
 
 //-----------------------------------------------------------------------------
 /**
- * Game table were all the action happens.
+ * Game table for the game moves. The table is a square, size x size.
  * @constructor
  * @param {Number} size The game table size.
  * @return {Object} Game table object.
@@ -431,10 +434,10 @@ function testRowsCols(_size) {
 
 //
 /**
- * Returns true if coodinate points to a corner.
- * @param {Number} _x 
- * @param {Number} _y 
- * @param {Number} _size Game table size.
+ * Returns true if coodinates [x,y] points to a corner.
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Number} size Game table size.
  * @return {Boolean} 
  */
 function isCorner(_x, _y, _size) {
@@ -460,7 +463,7 @@ function randomMove(_size) {
 //
 /**
  * Returns random [x,y] game coordinates.
- * Coordinates location is it free. 
+ * Coordinates location is it free for a move.
  * @param {Number} _gameTable
  * @return {Array} [x,y]
  */
@@ -489,7 +492,7 @@ function computerRandomMove(_gameTable) {
 /**
  * ReadMove reads game table coordinates from user.
  * The format is <char><number>.
- *  For examle: user input 'A1' gives [0,0] and 'A2' gives [1,0].
+ * For examle: user input 'A1' gives [0,0] and 'A2' gives [1,0].
  * @return {Array} x,y
  */
 function readMove() {
@@ -509,7 +512,7 @@ function readMove() {
  */
 function playGame(_size) {
   let tictactoe = new TableOfSquares(_size);
-  let attackDefenceRation = ATTACK_DEFENCE_RATION  
+  let defenceRation = DEFENCE_RATION  
   tictactoe.init();
   let ok = true;
   let gameOver = false;
@@ -539,7 +542,7 @@ function playGame(_size) {
           corner = isCorner(computerMove[0], computerMove[1], tictactoe.getSize());
         } while (!corner);
       } else {
-        if (Math.random() >= attackDefenceRation) {
+        if (Math.random() >= defenceRation) {
           console.log('Attack...')
           computerMove = tictactoe.findSpotsForScore(X,O);     // attack
         } else {
