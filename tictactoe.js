@@ -2,16 +2,19 @@
 'use strict'
 var readlineSync = require('readline-sync');
 //-----------------------------------------------------------------------------
-// For Home 
+// Homework 14.10.2017
 //-----------------------------------------------------------------------------
 /**
  * @author 	Juha Havulinna
  */
-let board_size = 0;
+
+const ATTACK_DEFENCE_RATION = 0.3
+
+let boardSize = 0;
 
 if (process.argv.length == 3) {
     let inx = 2;
-    board_size = Number(process.argv[inx++]);
+    boardSize = Number(process.argv[inx++]);
   } else {
     console.log('Usage:' + process.argv[0] + ' [ <board size> ]');
     return; // Should be exit, is it?
@@ -37,7 +40,7 @@ function rowCharToy(_char) {
   return _char.charCodeAt(0) - 'A'.charCodeAt(0);
 }
 
-// board_size = 4;
+// boardSize = 4;
 
 const emptySlot = '_'
 const X = 'x';
@@ -98,10 +101,10 @@ function Square(_kumma_x, _kumma_y, _defenceScore, _attackScore) {
  */
 function TableOfSquares(_size) {
   let size = _size;
-  let board = Array(board_size);
+  let board = Array(_size);
   let maxMoves = _size * _size; // maximum moves in one game for this board size.
   let moves = 0; // count of moves in one game.
-  var object = {
+    var object = {
     getSize : function() {
       return size;
     },
@@ -396,8 +399,8 @@ function TableOfSquares(_size) {
   return object;
 };
 //
-function testRowsCols() {
-  let tictactoe = new TableOfSquares(board_size);
+function testRowsCols(_size) {
+  let tictactoe = new TableOfSquares(_size);
   tictactoe.init();  
   tictactoe.square(0,0).setBadge('A');
   tictactoe.square(0,1).setBadge('A');
@@ -417,13 +420,13 @@ function testRowsCols() {
   console.log('i - row 2:', tictactoe.countRowScore(2, 'i'));
   console.log('A - top left to low right:', tictactoe.countDiagonalScore(0, 'A'));
   console.log('i - top left to low right:', tictactoe.countDiagonalScore(0, 'i'));
-  console.log('A - bottom left to top right:', tictactoe.countDiagonalScore(board_size, 'A'));
-  console.log('i - bottom left to top right:', tictactoe.countDiagonalScore(board_size, 'i'));
-  console.log(isCorner(2, 3, board_size));
-  console.log(isCorner(0, 0, board_size));
-  console.log(isCorner(0, 3, board_size));
-  console.log(isCorner(3, 0, board_size));
-  console.log(isCorner(3, 3, board_size));
+  console.log('A - bottom left to top right:', tictactoe.countDiagonalScore(_size, 'A'));
+  console.log('i - bottom left to top right:', tictactoe.countDiagonalScore(_size, 'i'));
+  console.log(isCorner(2, 3, _size));
+  console.log(isCorner(0, 0, _size));
+  console.log(isCorner(0, 3, _size));
+  console.log(isCorner(3, 0, _size));
+  console.log(isCorner(3, 3, _size));
 }
 
 //
@@ -485,7 +488,8 @@ function computerRandomMove(_gameTable) {
 //
 /**
  * ReadMove reads game table coordinates from user.
- * The format is <char><number>. User input 'A1' gives [0,0], input A2 => [1,0].
+ * The format is <char><number>.
+ *  For examle: user input 'A1' gives [0,0] and 'A2' gives [1,0].
  * @return {Array} x,y
  */
 function readMove() {
@@ -499,10 +503,13 @@ function readMove() {
 
 /**
  * Play a tictactoe game with given board size.
+ * Game ends when either player wins, user or computer,
+ * or there is no more moves available.
  * @param {Number} size 
  */
-function game(_size) {
+function playGame(_size) {
   let tictactoe = new TableOfSquares(_size);
+  let attackDefenceRation = ATTACK_DEFENCE_RATION  
   tictactoe.init();
   let ok = true;
   let gameOver = false;
@@ -520,8 +527,8 @@ function game(_size) {
         break;
       };
       let computerMove = [];
-      if (tictactoe.getMoves() < 4) {
-        console.log('corner...')
+      if (tictactoe.getMoves() <= 4) {
+        console.log('Corner...')
         let corner = true;
         do {
           computerMove = computerRandomMove(tictactoe);
@@ -532,20 +539,21 @@ function game(_size) {
           corner = isCorner(computerMove[0], computerMove[1], tictactoe.getSize());
         } while (!corner);
       } else {
-        if ( Math.random() >= 0.3 ) {
-          console.log('A')
+        if (Math.random() >= attackDefenceRation) {
+          console.log('Attack...')
           computerMove = tictactoe.findSpotsForScore(X,O);     // attack
         } else {
-          console.log('D')
+          console.log('Defence...')
           computerMove = tictactoe.findSpotsForScore(O,X);     // defence
           if (!tictactoe.moveIsValid(computerMove)) {
+            console.log('no, it an attack.')
             computerMove = tictactoe.findSpotsForScore(X,O);     // attack
           };
         };
       };
-      console.log('computerMove:', computerMove);
+      console.log('ComputerMove:', computerMove);
       if (computerMove[0] == null || computerMove[1] == null) {
-        console.log('computer random');
+        console.log('random');
         computerMove = computerRandomMove(tictactoe);
       };
       if (tictactoe.moveIsValid(computerMove)) {
@@ -565,6 +573,6 @@ function game(_size) {
   console.log('GAME OVER');
 };
 
-game(board_size);
+playGame(boardSize);
 
 // The End.
