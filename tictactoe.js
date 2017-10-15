@@ -9,7 +9,7 @@ var readlineSync = require('readline-sync');
  */
 
 /**
- * The propabity computer will defence. 0.3 means 30%.
+ * The propabity computer will defence. Value 0.3 means 30% propability to defence and 70% to attack.
  */
 const DEFENCE_RATION = 0.3;
 
@@ -31,7 +31,7 @@ if (process.argv.length == 3) {
 
 /**
  * Change row number to row letter eg. 0 -> 'A'.
- * @param {number} _row the row number
+ * @param {number} row is the row number
  * @return {String}
  * @see {rowCharToy}
  */
@@ -41,7 +41,7 @@ function yToRowChar(_row) {
 
 /**
  * Change row letter to number e.g. 'B' -> 1.
- * @param {char} _char is the row identy for s user.
+ * @param {char} char is the row identy for s user.
  * @return {number} 
  * @see {yToRowChar}
  */
@@ -99,7 +99,7 @@ function Square(_kumma_x, _kumma_y, _defenceScore, _attackScore) {
 /**
  * Game table for the game moves. The table is a square, size x size.
  * @constructor
- * @param {Number} size The game table size.
+ * @param {Number} size is the game table size.
  * @return {Object} Game table object.
  */
 function TableOfSquares(_size) {
@@ -141,16 +141,12 @@ function TableOfSquares(_size) {
       // console.log('size:', size);
       for (yi = 0; yi < size; yi++) {
         for (xi = 0; xi < size; xi++) {
-            board[xi][yi] = new Square(xi, yi, 0, 0);
-          // let tavara = `tavara:${xi},${yi}`;
-          // board[xi][yi] = tavara;
-          // console.log(`x:${xi},y:${yi} == ${tavara}`);          
+            board[xi][yi] = new Square(xi, yi, 0, 0);  
         };
-        // console.log(board);        
       };
       return object;
     }, 
-    // Print the game table
+    // Return current game table for a display.
     print : function () {
       let printThis = ' ';
       let xi = 0;
@@ -160,11 +156,8 @@ function TableOfSquares(_size) {
       }
       printThis += newLine;
       for (yi = 0; yi < size; yi++) {
-        printThis += yToRowChar(yi); //   String.fromCharCode('A'.charCodeAt(0) + yi)
+        printThis += yToRowChar(yi);
         for (xi = 0; xi < size; xi++) {
-          // console.log(`x:${xi},y:${yi}`);
-          // printThis += '[' + xi + yi + ']:' + board[xi][yi].getBadge();
-          // printThis += ('[' + xi + ',' + yi + ']:' + board[xi][yi]);
           printThis += '|' + board[xi][yi].getBadge();
         }
         printThis += '|'
@@ -250,7 +243,6 @@ function TableOfSquares(_size) {
         };
       } else {
         for (let i = 0; i < _size; i++) {
-          //console.log(`x:${i},y:${size - 1 - i}`);
           if (_button == board[i][size - 1 - i].getBadge()) {
             score++;
           };
@@ -289,7 +281,7 @@ function TableOfSquares(_size) {
         } else {
           colSums[n] = 0;
         };
-      }
+      };
       if (this.countDiagonalScore(0, _noButton) == 0) {
           diagA = this.countDiagonalScore(0, _button);
       };
@@ -309,35 +301,35 @@ function TableOfSquares(_size) {
       let spot_x = null;
       let spot_y = null;
       let spot_d = null;
-      console.log('highesScoreIndex:', highesScoreIndex);
+      // console.log('highesScoreIndex:', highesScoreIndex);
       switch (highesScoreIndex) {
         case (0) :
-          console.log('case 0, highestRow:', highestRow);
+          // console.log('case 0, highestRow:', highestRow);
           spot_x = this.findFreeInRow(highestRow,0);
           if (spot_x != null) {
             return [spot_x, highestRow]
           }; // fall if no free spots
         case (1) :
-          console.log('case 1');
+          // console.log('case 1');
           spot_y = this.findFreeInCol(highestCol,0);
           if (spot_y != null) {
             return [highestCol, spot_y]
           };  // fall if no free spots
         case (2) :
-          console.log('case 3');
+          // console.log('case 3');
           spot_d = this.findFreeInDiagonal(0,0);
           if (spot_d != null) {
             return [spot_d, spot_d];
           };  // fall if no free spots
         case (3) :
-        console.log('case 4');
+        // console.log('case 3');
           spot_d = this.findFreeInDiagonal(_size,0);
           if (spot_d != null) {
             console.log('spot_d:', spot_d);
             return [spot_d, _size - spot_d - 1];
           };  // fall if no free spots
         default:
-          console.log('case default? - highesScoreIndex:', highesScoreIndex, typeof(highesScoreIndex));
+          // console.log('case default? - highesScoreIndex:', highesScoreIndex, typeof(highesScoreIndex));
           break;
       };    
       return [ null, null ];  // next will be a random move.
@@ -524,6 +516,8 @@ function playGame(_size) {
     if (tictactoe.moveIsValid(move)) {
       tictactoe.square(move[0],move[1]).setBadge(O);
       gameOver = tictactoe.moveDone();
+      if (gameOver)
+        break;
       // console.log(tictactoe.print());
       if (tictactoe.checkWin()) {
         console.log('You win!');
@@ -543,20 +537,20 @@ function playGame(_size) {
         } while (!corner);
       } else {
         if (Math.random() >= defenceRation) {
-          console.log('Attack...')
+          // console.log('Attack...')
           computerMove = tictactoe.findSpotsForScore(X,O);     // attack
         } else {
-          console.log('Defence...')
+          // console.log('Defence...')
           computerMove = tictactoe.findSpotsForScore(O,X);     // defence
           if (!tictactoe.moveIsValid(computerMove)) {
-            console.log('no, it an attack.')
+            // console.log('no, it an attack.')
             computerMove = tictactoe.findSpotsForScore(X,O);     // attack
           };
         };
       };
-      console.log('ComputerMove:', computerMove);
+      // console.log('ComputerMove:', computerMove);
       if (computerMove[0] == null || computerMove[1] == null) {
-        console.log('random');
+        // console.log('random');
         computerMove = computerRandomMove(tictactoe);
       };
       if (tictactoe.moveIsValid(computerMove)) {
