@@ -54,29 +54,21 @@ function rowCharToy(_char) {
 //-----------------------------------------------------------------------------
 /**
  * @constructor
- * @param {Number} x game table slot x-coordinate.
- * @param {Number} y game table slot y-coordinate 
- * @param {Number} defenceScore not used.
+  * @param {Number} defenceScore not used.
  * @param {Number} attackScore not used.
  * @return {Object} game table slot object.
  */
-function Square(_kumma_x, _kumma_y, _defenceScore, _attackScore) { 
+function Square(_defenceScore, _attackScore) { 
   // let x = _x;
   // let y = _y;
-  let kumma_x = _kumma_x;
-  let kumma_y = _kumma_y;
   let defenceScore = _defenceScore;
   let attackScore = _attackScore;
-  let badge = emptySlot; // `init x:${kumma_x} y:${kumma_y}`
+  let badge = emptySlot;
   var object = {
     setBadge : function(_badge) {
       badge = _badge;
-      // badge = `set:${kumma_x},${kumma_y}`;
-      // console.log('set >> Badge:', kumma_x, kumma_y, badge);
     },
     getBadge : function() {
-      // console.log('getBadge:', badge);
-      // console.log('get << Badge:', kumma_x, kumma_y, badge);
       return badge;
     },
     setDefenceScore : function(_score) {
@@ -168,35 +160,35 @@ function TableOfSquares(_size) {
     // Find the first free slot in a column starting from offset.
     findFreeInCol : function (_col, _offset) {
       for (let yi = _offset; yi < size; yi++) {
-        console.log('Free in col, check row:', yi);
+        // console.log('Free in col, check row:', yi);
         if (emptySlot == board[_col][yi].getBadge()) {
-          console.log('yes');
+          // console.log('yes');
           return yi;
         };
       };
-      console.log('no');
+      // console.log('no');
       return null;
     },
     // Find the first free slot in a row starting from offset.
     findFreeInRow : function (_row, _offset) {
       for (let xi = _offset; xi < size; xi++) {
-        console.log('Free in row, check col:', xi);
+        // console.log('Free in row, check col:', xi);
         if (emptySlot == board[xi][_row].getBadge()) {
-          console.log('yes');          
+          // console.log('yes');          
           return xi;
         };
       };
-      console.log('no');
+      // console.log('no');
       return null;
     },
     // Find free based on corner 0 => Case A: x(0)y(0) else => Case B: x(0),y(size - 1)  
     findFreeInDiagonal : function (_corner, _offset) {
       let score = 0;
-      console.log('Free in diagonal:', _corner);      
+      // console.log('Free in diagonal:', _corner);      
       if (_corner == 0) {
         for (let i = _offset; i < _size; i++) {
           if (emptySlot == board[i][i].getBadge()) {
-            console.log('yes');            
+            // console.log('yes');            
             return i;
           };
         };
@@ -204,12 +196,12 @@ function TableOfSquares(_size) {
         for (let i = _offset; i < _size; i++) {
           //console.log(`x:${i},y:${size - 1 - i}`);
           if (emptySlot == board[i][size - 1 - i].getBadge()) {
-            console.log('yes');
+            // console.log('yes');
             return i;
           };
         };
       }
-      console.log('no');
+      // console.log('no');
       return null;
     },
     // Count the number of buttons in a column.
@@ -510,7 +502,7 @@ function playGame(_size) {
   let gameOver = false;
   console.log('GAME START');
   while (!gameOver) {
-    console.log('x ----------->')
+    // console.log('x ----------->')
     console.log(tictactoe.print());
     let move = readMove();
     if (tictactoe.moveIsValid(move)) {
