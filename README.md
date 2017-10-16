@@ -14,7 +14,7 @@ You need node.js and terminal session to run this game.
 
 ### Installing
 
-Just clone this repository from: https://github.com/jmhjuha/js4fun
+Just clone this repository from: https://github.com/jmhjuha/TTT---TicTacToe.git
 
 ## Running the game with 3x3 game board.
 
