@@ -29,6 +29,11 @@ if (process.argv.length == 3) {
     return; // Should be exit, is it?
 };
 
+if (boardSize < 3) {
+  console.log(process.argv[0] + ': Game board size must be at least three (3).');
+  return;
+}
+
 /**
  * Change row number to row letter eg. 0 -> 'A'.
  * @param {number} row is the row number
