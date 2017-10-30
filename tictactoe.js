@@ -2,7 +2,7 @@
 'use strict'
 var readlineSync = require('readline-sync');
 //-----------------------------------------------------------------------------
-// Homework 14.10.2017
+// Homework 29.10.2017
 //-----------------------------------------------------------------------------
 /**
  * @author 	Juha Havulinna
@@ -11,7 +11,7 @@ var readlineSync = require('readline-sync');
 /**
  * The propabity computer will defence. Value 0.3 means 30% propability to defence and 70% to attack.
  */
-const DEFENCE_RATION = 0.3;
+const DEFENCE_RATION = 1.3;
 
 const emptySlot = '_'
 const X = 'x';
@@ -47,7 +47,7 @@ function yToRowChar(_row) {
 /**
  * Change row letter to number e.g. 'B' -> 1.
  * @param {char} char is the row identy for s user.
- * @return {number} 
+ * @return {Number} 
  * @see {yToRowChar}
  */
 function rowCharToy(_char) {
@@ -123,7 +123,7 @@ function TableOfSquares(_size) {
       moves++;
       return (moves >= maxMoves);   // true if game is over
     },
-    square : function(x, y) {
+    getBoardSquare : function(x, y) {
       // console.log(`x:${x},y:${y}`);
       return board[x][y];
     },
@@ -247,7 +247,8 @@ function TableOfSquares(_size) {
       }
       return score;
     },
-    // return [ MaxRow, MaxCol, MaxDiag-A, MaxDiag-B ]
+    //----------------------------------------------------------
+    // return [ x, y, score ]
     findSpotsForScore : function (_button, _noButton) {
       let titles = ['row','col','dia','dib'];
       let rowSums = Array(size);
@@ -287,49 +288,50 @@ function TableOfSquares(_size) {
       };
       let maxims = [highestRowSum, highestColSum, diagA, diagB];
       let inxeses = [highestRow, highestCol, 0, _size];
-      let highesScore = 0;
-      let highesScoreIndex = NaN;
+      let highestScore = 0;
+      let highestScoreIndex = NaN;
       for (let i in maxims) {
-        if (maxims[i] > highesScore) {
-          highesScore = maxims[i];
-          highesScoreIndex = Number(i);
+        if (maxims[i] > highestScore) {
+          highestScore = maxims[i];
+          highestScoreIndex = Number(i);
         };
       };
       let spot_x = null;
       let spot_y = null;
       let spot_d = null;
-      // console.log('highesScoreIndex:', highesScoreIndex);
-      switch (highesScoreIndex) {
+      // console.log('highestScoreIndex:', highestScoreIndex);
+      switch (highestScoreIndex) {
         case (0) :
           // console.log('case 0, highestRow:', highestRow);
           spot_x = this.findFreeInRow(highestRow,0);
           if (spot_x != null) {
-            return [spot_x, highestRow]
-          }; // fall if no free spots
+            return [spot_x, highestRow, highestScore]
+          }; // falls down if no free spots
         case (1) :
           // console.log('case 1');
           spot_y = this.findFreeInCol(highestCol,0);
           if (spot_y != null) {
-            return [highestCol, spot_y]
-          };  // fall if no free spots
+            return [highestCol, spot_y, highestScore]
+          };  // falls if no free spots
         case (2) :
           // console.log('case 3');
           spot_d = this.findFreeInDiagonal(0,0);
           if (spot_d != null) {
-            return [spot_d, spot_d];
-          };  // fall if no free spots
+            return [spot_d, spot_d, highestScore];
+          };  // falls if no free spots
         case (3) :
         // console.log('case 3');
           spot_d = this.findFreeInDiagonal(_size,0);
           if (spot_d != null) {
             console.log('spot_d:', spot_d);
-            return [spot_d, _size - spot_d - 1];
-          };  // fall if no free spots
+            return [spot_d, _size - spot_d - 1, highestScore];
+          };  // falls if no free spots
         default:
-          // console.log('case default? - highesScoreIndex:', highesScoreIndex, typeof(highesScoreIndex));
+          // console.log('case default? - highestScoreIndex:', highestScoreIndex, typeof(highestScoreIndex));
+          // *** assert? ***
           break;
       };    
-      return [ null, null ];  // next will be a random move.
+      return [ null, null, highestScore ];  // next should be a random move.
     },
     // Check for a winner in rows, cols and diagonals.
     checkWin : function () {
@@ -394,15 +396,15 @@ function TableOfSquares(_size) {
 function testRowsCols(_size) {
   let tictactoe = new TableOfSquares(_size);
   tictactoe.init();  
-  tictactoe.square(0,0).setBadge('A');
-  tictactoe.square(0,1).setBadge('A');
-  tictactoe.square(0,2).setBadge('i');
-  tictactoe.square(1,0).setBadge('A');
-  tictactoe.square(1,1).setBadge('i');
-  tictactoe.square(1,2).setBadge('A');
-  tictactoe.square(2,0).setBadge('A');
-  tictactoe.square(2,1).setBadge('A');
-  tictactoe.square(2,2).setBadge('A');
+  tictactoe.getBoardSquare(0,0).setBadge('A');
+  tictactoe.getBoardSquare(0,1).setBadge('A');
+  tictactoe.getBoardSquare(0,2).setBadge('i');
+  tictactoe.getBoardSquare(1,0).setBadge('A');
+  tictactoe.getBoardSquare(1,1).setBadge('i');
+  tictactoe.getBoardSquare(1,2).setBadge('A');
+  tictactoe.getBoardSquare(2,0).setBadge('A');
+  tictactoe.getBoardSquare(2,1).setBadge('A');
+  tictactoe.getBoardSquare(2,2).setBadge('A');
   console.log(tictactoe.print());
   console.log('A - col 0:', tictactoe.countColScore(0, 'A'));
   console.log('A - col 1:', tictactoe.countColScore(1, 'A'));
@@ -511,7 +513,7 @@ function playGame(_size) {
     console.log(tictactoe.print());
     let move = readMove();
     if (tictactoe.moveIsValid(move)) {
-      tictactoe.square(move[0],move[1]).setBadge(O);
+      tictactoe.getBoardSquare(move[0],move[1]).setBadge(O);
       gameOver = tictactoe.moveDone();
       if (gameOver)
         break;
@@ -521,8 +523,10 @@ function playGame(_size) {
         break;
       };
       let computerMove = [];
+      let computerDefenceMove = [];
+      let computerAttackMove = [];
       if (tictactoe.getMoves() <= 4) {
-        console.log('Corner...')
+        // console.log('Corner...')
         let corner = true;
         do {
           computerMove = computerRandomMove(tictactoe);
@@ -533,30 +537,32 @@ function playGame(_size) {
           corner = isCorner(computerMove[0], computerMove[1], tictactoe.getSize());
         } while (!corner);
       } else {
-        if (Math.random() >= defenceRation) {
-          // console.log('Attack...')
-          computerMove = tictactoe.findSpotsForScore(X,O);     // attack
-        } else {
-          // console.log('Defence...')
-          computerMove = tictactoe.findSpotsForScore(O,X);     // defence
-          if (!tictactoe.moveIsValid(computerMove)) {
-            // console.log('no, it an attack.')
-            computerMove = tictactoe.findSpotsForScore(X,O);     // attack
+        computerAttackMove = tictactoe.findSpotsForScore(X,O);     // attack
+        // console.log('ComputerAttackMove:', computerAttackMove);
+        computerDefenceMove = tictactoe.findSpotsForScore(O,X);     // defence
+        // console.log('ComputerDefenceMove:', computerDefenceMove);
+        if ((computerAttackMove[2] > 0) && (computerDefenceMove[2] > 0)) {
+          if (computerAttackMove[2] >= computerDefenceMove[2]) {
+            computerMove = computerAttackMove;
+          } else {
+            computerMove = computerDefenceMove;
           };
+        } else {
+          computerMove = (computerAttackMove[2] > 0) ? computerAttackMove : computerDefenceMove;
         };
       };
-      // console.log('ComputerMove:', computerMove);
+
       if (computerMove[0] == null || computerMove[1] == null) {
-        // console.log('random');
+        console.log('random');
         computerMove = computerRandomMove(tictactoe);
       };
       if (tictactoe.moveIsValid(computerMove)) {
-        tictactoe.square(computerMove[0], computerMove[1]).setBadge(X);
+        tictactoe.getBoardSquare(computerMove[0], computerMove[1]).setBadge(X);
         gameOver = tictactoe.moveDone();
       } else {
         console.assert('*** Programmer error ***');
       };
-      // console.log( computerRandomMove(tictactoe) );
+      // console.log('ComputerMove:', computerMove);
       if (tictactoe.checkWin()) {
         console.log('Computer wins!');
         break;
